@@ -1,11 +1,11 @@
-const { expect } = require("chai");
+/**const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 describe("Greeter", function () {
   it("Should return the new greeting once it's changed", async function () {
     /*const Greeter = await ethers.getContractFactory("Greeter");
     const greeter = await Greeter.deploy("Hello, world!");
-    await greeter.deployed();*/
+    await greeter.deployed();
     const {deployer} = await getNamedAccounts()
     await deployments.fixture();
     
@@ -20,7 +20,7 @@ describe("Greeter", function () {
 
     msg = await greeter.greet();
     console.log("line 22", msg)
-    
+
     //expect(await greeter.greet()).to.equal("Hello, world!");
 
     //const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
@@ -32,3 +32,4 @@ describe("Greeter", function () {
   });
 });
 
+**/
