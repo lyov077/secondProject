@@ -150,10 +150,10 @@ contract CoinFlip is Ownable {
         bytes memory prefix = "\x19Ethereum Signed Message:\n32";
         bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, _seed));
 
-        /*require(
+        require(
             ecrecover(prefixedHash, _v, _r, _s) == croupier,
             "Invalid signature"
-        );*/
+        );
 
         game.result = uint256(_s) % 2;
 
