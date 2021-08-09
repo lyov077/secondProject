@@ -242,9 +242,7 @@ contract CoinFlip is Ownable {
 
         payable(owner()).transfer(address(this).balance);
     }
-    function balanceContract()public view returns(uint){
-        return address(this).balance;
-    }
+
     receive() external payable {}
 
     // Fallback function

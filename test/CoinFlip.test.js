@@ -29,12 +29,7 @@ describe("CoinFlip contract: ", function () {
             // expect(await coinFlip.WIN_COEFFICIENT()).to.equal(195);
         })
     })
-    describe("Balance: ", async () => {
-        it("Should retrun balance of contract", async () => {
-            k = await coinFlip.connect(accounts.caller).balanceContract()
-            console.log(k.toString());
-        })
-    })
+
     describe("Function play: ", async () => {
         it('Choice should be 0 or 1', async () => {
             const seed = ethers.utils.formatBytes32String("game1");
@@ -163,7 +158,6 @@ describe("CoinFlip contract: ", function () {
                 .withArgs(accounts.caller.address, betAmount, winBet, choice, 0, seed, 1);
 
             const k = await coinFlip.games(seed)
-            console.log(k.toString())
             expect(k[0]).to.equal(5);
             expect(k[1]).to.equal(accounts.caller.address);
             expect(k[2]).to.equal(betAmount);
@@ -175,24 +169,7 @@ describe("CoinFlip contract: ", function () {
 
 
         })
-        /* expect(await coinFlip.games(seed)).to.be.deep.equal([
-             ethers.constants.One,
-             accounts.caller.address,
-             betAmount,
-             winBet,
-             choice,
-             ethers.constants.One,
-             1
-         ])
 
-    })*/
-        /*it("Event when win", async () => {
-            seed = 
-            expect(await coinFlip.connect(accounts.deployer).confirm(seed, signature.v, signature.r, signature.s)
-            )
-                .to.emit(coinFlip, 'GamePlayed')
-                .withArgs(accounts.caller.address, betAmount, winBet, choice, 0, seed, 1);
-        })*/
         it("Game result when you lose", async () => {
             const seed = ethers.utils.formatBytes32String("game634");
             const privateKey = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
@@ -218,34 +195,48 @@ describe("CoinFlip contract: ", function () {
         })
     })
 
-    xdescribe("setBetRange: ", async () => {
-        it("Should change minBet and maxBet values", async () => {
-            await coinFlip.setBetRange(1, 20);
-            expect(await coinFlip.maxEtherBet()).to.equal(20);
-            expect(await coinFlip.minEtherBet()).to.equal(1);
+    describe("Function withdraw", async () => {
+        it("Should withdraw balance of contract", async () => {
+            const houseProfitEther = await coinFlip.houseProfitEther();
+            const balanceContract = await ethers.provider.getBalance(coinFlip.address)//address contract
+            await expect(await coinFlip.withdraw())
+                .to
+                .changeEtherBalances(
+                    [coinFlip, accounts.deployer],
+                    [(balanceContract.sub(houseProfitEther)).mul(ethers.constants.NegativeOne), balanceContract.sub(houseProfitEther)])
         })
     })
-    xdescribe("setWinCoefficient: ", async () => {
-        it("Should change coeficient", async () => {
-            await coinFlip.setWinCoefficient(190);
-            expect(await coinFlip.WIN_COEFFICIENT()).to.equal(190);
-        })
-    })
-
-    xdescribe("takeProfit: ", async () => {
+    describe("takeProfit: ", async () => {
         it("Should revert with msg Only the profit taker can run this function.", async () => {
             await expect(coinFlip.connect(accounts.caller).takeProfit())
                 .to
                 .be
                 .revertedWith("Only the profit taker can run this function.")
         })
-        it("Should take profit to ProfitTaker", async () => {
-            profit = coinFlip.houseProfitEther();
+        it("Should transfer profit to ProfitTaker", async () => {
+            const houseProfitEther = await coinFlip.houseProfitEther();
 
+            await expect(await coinFlip.takeProfit())
+                .to.changeEtherBalances([coinFlip, accounts.deployer], [houseProfitEther.mul(ethers.constants.NegativeOne), houseProfitEther])
+        })
+    })
+    describe("setBetRange: ", async () => {
+        it("Should change minBet and maxBet values", async () => {
+            await coinFlip.setBetRange(1, 20);
+            expect(await coinFlip.maxEtherBet()).to.equal(20);
+            expect(await coinFlip.minEtherBet()).to.equal(1);
+        })
+    })
+    describe("setWinCoefficient: ", async () => {
+        it("Should change coeficient", async () => {
+            await coinFlip.setWinCoefficient(190);
+            expect(await coinFlip.WIN_COEFFICIENT()).to.equal(190);
         })
     })
 
-    xdescribe("setCroupier: ", async () => {
+
+
+    describe("setCroupier: ", async () => {
         it("Should change croupier", async () => {
             await coinFlip.setCroupier(accounts.caller.address);
             expect(await coinFlip.croupier())
@@ -254,27 +245,13 @@ describe("CoinFlip contract: ", function () {
 
     })
 
-    xdescribe("setProfitTaker", async () => {
+    describe("setProfitTaker", async () => {
         it("Should change profit taker", async () => {
             await coinFlip.setProfitTaker(accounts.caller.address)
             expect(await coinFlip.profitTaker()).to.equal(accounts.caller.address)
         })
     })
 
-    describe("Function takeProfit: ", async () => {
-        it("Should transfer profit to ProfitTaker", async () => {
-            const houseProfitEther = await coinFlip.houseProfitEther();
 
-            await expect(await coinFlip.takeProfit())
-                .to.changeEtherBalances([coinFlip, accounts.deployer], [houseProfitEther.mul(ethers.constants.NegativeOne), houseProfitEther])
-        })
-    })
-    describe("Function withdraw", async() => {
-        it("Should withdraw balance of contract", async() => {
-            const houseProfitEther = await coinFlip.houseProfitEther();
-            const balanceContract = await ethers.provider.getBalance(coinFlip.address)
-            await expect(await coinFlip.withdraw())
-            .to.changeEtherBalances([coinFlip, accounts.deployer], [balanceContract.sub(houseProfitEther).mul(ethers.constants.NegativeOne), balanceContract.sub(houseProfitEther)])
-        })
-    })
+
 })
