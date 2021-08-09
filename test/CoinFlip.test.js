@@ -109,6 +109,12 @@ describe("CoinFlip contract: ", function () {
             const choice = ethers.constants.One;
             const seed = ethers.utils.formatBytes32String("game6");
             await expect(() => coinFlip.connect(accounts.caller).play(choice, seed, { value: betAmount })).to.changeEtherBalances([accounts.caller, coinFlip], [betAmount.mul(ethers.constants.NegativeOne), betAmount]);
+
+
+        })
+        it("Should profit equal to 4 * 0.2 eth", async () => {
+            profit = await coinFlip.houseProfitEther()
+            expect(profit).to.equal(800000000000000000n)
         })
     })
     describe("Confirm: ", async () => {
@@ -158,6 +164,8 @@ describe("CoinFlip contract: ", function () {
                 .withArgs(accounts.caller.address, betAmount, winBet, choice, 0, seed, 1);
 
             const k = await coinFlip.games(seed)
+            const profit = await coinFlip.houseProfitEther()
+
             expect(k[0]).to.equal(5);
             expect(k[1]).to.equal(accounts.caller.address);
             expect(k[2]).to.equal(betAmount);
@@ -166,7 +174,7 @@ describe("CoinFlip contract: ", function () {
             expect(k[5]).to.equal(0);
             expect(k[6]).to.equal(1);
 
-
+            expect(profit).to.equal(220000000000000000n)//0.8-0.39-0.39+0.2 ETH
 
         })
 
@@ -184,6 +192,8 @@ describe("CoinFlip contract: ", function () {
                 .withArgs(accounts.caller.address, betAmount, winBet, choice, 0, seed, 2);
 
             const a = await coinFlip.games(seed)
+            const profit = await coinFlip.houseProfitEther()
+            expect(profit).to.equal(420000000000000000n)//0.22+0.2ETH
 
             expect(a[0]).to.equal(6);
             expect(a[1]).to.equal(accounts.caller.address);
@@ -192,6 +202,7 @@ describe("CoinFlip contract: ", function () {
             expect(a[4]).to.equal(choice);
             expect(a[5]).to.equal(0);
             expect(a[6]).to.equal(2);
+
         })
     })
 

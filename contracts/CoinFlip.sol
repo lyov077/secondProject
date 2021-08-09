@@ -145,7 +145,7 @@ contract CoinFlip is Ownable {
     ) public onlyCroupier {
         Game storage game = games[_seed];
 
-        require(game.state == GameState.PENDING, 'Game already played');
+        require(game.state == GameState.PENDING, "Game already played");
 
         bytes memory prefix = "\x19Ethereum Signed Message:\n32";
         bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, _seed));
